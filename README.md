@@ -1,3 +1,7 @@
+# Fork reasons
+Default `jailbroken()` detection for Android is not very flexible and may lead to false-positive results on Samsung and other models.
+Upgrade: replace straight check for root, adding checking for different rules
+
 # flutter_jailbreak_detection_plus
 
 Flutter jailbreak and root detection plugin.

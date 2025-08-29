@@ -18,7 +18,6 @@ rootProject.allprojects {
     repositories {
         google()
         mavenCentral()
-        maven { url 'https://jitpack.io' }
     }
 }
 
@@ -39,11 +38,12 @@ android {
     }
     
     defaultConfig {
-        minSdkVersion 17
+        // AGP 8 requires minSdk 19+, but we also align with modern devices
+        minSdkVersion 19
     }
 }
 
 dependencies {
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"
-    implementation 'com.github.scottyab:rootbeer:0.1.0'
+    implementation 'com.scottyab:rootbeer-lib:0.1.1'
 }
