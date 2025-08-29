@@ -22,11 +22,12 @@ class FlutterJailbreakDetectionPlus {
   /// Checks if the device is jailbroken/rooted.
   /// Returns list of failed checks
   static Future<List<RootFamily>> jailbrokenAndroid() async {
-    List<String>? jailbroken =
-        await _channel.invokeMethod<List<String>>('jailbroken');
+    List<Object?>? jailbroken =
+        await _channel.invokeMethod<List<Object?>>('jailbroken');
     return jailbroken
             ?.map((e) =>
                 RootFamily.values.firstWhere((element) => element.key == e))
+            .whereType<RootFamily>()
             .toList() ??
         [];
   }
