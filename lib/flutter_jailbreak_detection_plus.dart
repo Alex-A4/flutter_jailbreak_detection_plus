@@ -20,23 +20,21 @@ class FlutterJailbreakDetectionPlus {
       const MethodChannel('flutter_jailbreak_detection');
 
   /// Checks if the device is jailbroken/rooted.
-  ///
-  /// ----- BELOW WORKS ONLY FOR ANDROID -----
-  /// [enabledFamilies] - Set of enabled root detection families (default: BINARIES, PACKAGES, PROPS).
-  /// [minFamilies] - Minimum number of triggered families to return true (default: 2).
-  static Future<bool> jailbroken({
-    List<RootFamily>? enabledFamilies,
-    int minFamilies = 2,
-  }) async {
-    final List<String>? families = enabledFamilies?.map((e) => e.key).toList();
-    final args = families == null
-        ? null
-        : <String, dynamic>{
-            'enabledFamilies': families,
-            'minFamilies': minFamilies,
-          };
-    bool? jailbroken = await _channel.invokeMethod<bool>('jailbroken', args);
-    return jailbroken ?? true;
+  /// Returns list of failed checks
+  static Future<List<RootFamily>> jailbrokenAndroid() async {
+    List<String>? jailbroken =
+        await _channel.invokeMethod<List<String>>('jailbroken');
+    return jailbroken
+            ?.map((e) =>
+                RootFamily.values.firstWhere((element) => element.key == e))
+            .toList() ??
+        [];
+  }
+
+  /// Checks if the device is jailbroken/rooted.
+  static Future<bool> jailbrokenIos() async {
+    bool? jailbroken = await _channel.invokeMethod<bool>('jailbroken');
+    return jailbroken ?? false;
   }
 
   static Future<bool> get developerMode async {
