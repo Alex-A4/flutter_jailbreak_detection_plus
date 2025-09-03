@@ -2,14 +2,13 @@ group 'yazan.alkamsheh.flutterjailbreakdetectionplus'
 version '1.0-SNAPSHOT'
 
 buildscript {
-    ext.kotlin_version = '1.7.20'
+    ext.kotlin_version = '1.9.24' // AGP 8.x совместим с Kotlin 1.9.x
     repositories {
         google()
         mavenCentral()
     }
-
     dependencies {
-        classpath 'com.android.tools.build:gradle:8.0.0'
+        classpath 'com.android.tools.build:gradle:8.0.0' // при желании можно 8.4.x/8.5.x, но 8.0.0 тоже ок
         classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"
     }
 }
@@ -18,11 +17,12 @@ rootProject.allprojects {
     repositories {
         google()
         mavenCentral()
+        maven { url 'https://jitpack.io' }
     }
 }
 
 apply plugin: 'com.android.library'
-apply plugin: 'kotlin-android'
+apply plugin: 'org.jetbrains.kotlin.android' // корректный id плагина
 
 android {
     namespace 'yazan.alkamsheh.flutterjailbreakdetectionplus'
@@ -36,14 +36,17 @@ android {
         sourceCompatibility JavaVersion.VERSION_17
         targetCompatibility JavaVersion.VERSION_17
     }
-    
+
+    kotlinOptions {
+        jvmTarget = '17'
+    }
+
     defaultConfig {
-        // AGP 8 requires minSdk 19+, but we also align with modern devices
         minSdkVersion 19
     }
 }
 
 dependencies {
-    implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"
+    implementation "org.jetbrains.kotlin:kotlin-stdlib:$kotlin_version" // без -jdk7
     implementation 'com.scottyab:rootbeer-lib:0.1.1'
 }

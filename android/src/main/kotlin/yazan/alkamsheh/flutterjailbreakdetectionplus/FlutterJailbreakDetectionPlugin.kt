@@ -72,25 +72,24 @@ class FlutterJailbreakDetectionPlugin : FlutterPlugin, MethodCallHandler {
         // 1) BINARIES: check su traces and the ability to write to the system partition.
         //    Strong family: usually indicates real root/modification.
         if (rootBeer.checkForSuBinary() ||            // Look for the su binary in common locations
-            rootBeer.checkSuExists() ||               // Additional check for the existence of su
-            rootBeer.checkForRWSystem() ||            // Check if /system is mounted RW (a sign of modification)
-            rootBeer.checkForRootNative()             // Native su search from C (bypasses Java-level cloaking)
+            rootBeer.checkSuExists()                // Additional check for the existence of su
+             || rootBeer.checkForRootNative()             // Native su search from C (bypasses Java-level cloaking)
         ) {
             failedFamilies.add(RootFamily.BINARIES)
         }
 
         // 2) PACKAGES: check for root managers/dangerous/cloaking apps.
         //    Strong but sometimes noisy: packages can be installed without actual root.
-        if (rootBeer.checkRootManagementApps() ||  // Magisk/SuperSU, etc.
-            rootBeer.checkPotentiallyDangerousApps() ||// Busybox installers, su emulators, etc.
-            rootBeer.checkRootCloakingApps()          // Xposed/RootCloak and any attempts to hide root
+        if (rootBeer.detectRootManagementApps() ||  // Magisk/SuperSU, etc.
+            rootBeer.detectPotentiallyDangerousApps() ||// Busybox installers, su emulators, etc.
+            rootBeer.detectRootCloakingApps()          // Xposed/RootCloak and any attempts to hide root
         ) {
             failedFamilies.add(RootFamily.PACKAGES)
         }
 
         // 3) PROPS: dangerous system properties and test-keys.
         //    Noisy family: often appears on Samsung/custom builds without real root.
-        if (rootBeer.checkTestKeys() ||    // Firmware signed with test-keys (not equal to root, but suspicious)
+        if (rootBeer.detectTestKeys() ||    // Firmware signed with test-keys (not equal to root, but suspicious)
             rootBeer.checkForDangerousProps()         // Check ro.debuggable/ro.secure and similar flags
         ) {
             failedFamilies.add(RootFamily.PROPS)
@@ -98,9 +97,7 @@ class FlutterJailbreakDetectionPlugin : FlutterPlugin, MethodCallHandler {
 
         // 4) PATHS: dangerous paths and incorrect permissions on paths.
         //    Useful as a complement to BINARIES; sometimes catches bypasses through unusual directories.
-        if (rootBeer.checkForDangerousPaths() ||  // Presence of su/busybox/xposed in known "root paths"
-            rootBeer.checkForWrongPathPermissions()   // Atypical permissions on system paths (not typical for stock)
-        ) {
+        if (rootBeer.checkForRWPaths()) { // Presence of su/busybox/xposed in known "root paths"
             failedFamilies.add(RootFamily.PATHS)
         }
 
